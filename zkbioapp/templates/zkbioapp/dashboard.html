@@ -1,0 +1,382 @@
+{% extends 'zkbioapp/base.html' %}
+
+{% block title %}Dashboard - ZKBio ERP Sync{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tachometer-alt me-2"></i>Synchronization Dashboard
+        </h1>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card card-stat text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.total_employees }}</h4>
+                        <p class="card-text">Total Employees</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.total_records }}</h4>
+                        <p class="card-text">Total Records</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clipboard-list fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.synced_records }}</h4>
+                        <p class="card-text">Synced Records</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.pending_records }}</h4>
+                        <p class="card-text">Pending Records</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="sync-actions">
+    <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+    <div class="row">
+        <div class="col-md-3">
+            <form method="post" action="{% url 'zkbioapp:sync_employees' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-users me-1"></i>Sync Employees
+                </button>
+            </form>
+        </div>
+        <div class="col-md-3">
+            <form method="post" action="{% url 'zkbioapp:sync_attendance' %}">
+                {% csrf_token %}
+                <input type="hidden" name="days" value="1">
+                <button type="submit" class="btn btn-outline-info w-100">
+                    <i class="fas fa-calendar-day me-1"></i>Sync Today
+                </button>
+            </form>
+        </div>
+        <div class="col-md-3">
+            <form method="post" action="{% url 'zkbioapp:sync_erp' %}">
+                {% csrf_token %}
+                <input type="hidden" name="max_records" value="50">
+                <button type="submit" class="btn btn-outline-success w-100">
+                    <i class="fas fa-upload me-1"></i>Sync to ERP
+                </button>
+            </form>
+        </div>
+        <div class="col-md-3">
+            <form method="post" action="{% url 'zkbioapp:full_sync' %}">
+                {% csrf_token %}
+                <input type="hidden" name="days" value="1">
+                <button type="submit" class="btn btn-outline-warning w-100">
+                    <i class="fas fa-sync-alt me-1"></i>Full Sync
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Sync Options -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-cog me-2"></i>Advanced Sync Options</h5>
+            </div>
+            <div class="card-body">
+                <!-- Attendance Sync Form -->
+                <form method="post" action="{% url 'zkbioapp:sync_attendance' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Sync Attendance</label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="number" class="form-control" name="days" placeholder="Days" value="1" min="1" max="30">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="date" class="form-control" name="start_date">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="date" class="form-control" name="end_date">
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">Use either days or date range</small>
+                    </div>
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-download me-1"></i>Sync Attendance
+                    </button>
+                </form>
+
+                <hr>
+
+                <!-- ERP Sync Form -->
+                <form method="post" action="{% url 'zkbioapp:sync_erp' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Sync to ERP</label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="number" class="form-control" name="max_records" placeholder="Max Records" value="100" min="1" max="1000">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="date" class="form-control" name="date">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="employee_code" placeholder="Employee Code">
+                            </div>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="retry_failed" id="retryFailed">
+                            <label class="form-check-label" for="retryFailed">
+                                Retry failed records only
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-upload me-1"></i>Sync to ERP
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line me-2"></i>Sync Statistics (Last 7 Days)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="syncChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-history me-2"></i>Recent Sync Logs</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_logs %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in recent_logs %}
+                                <tr>
+                                    <td>{{ log.created_at|date:"M d, H:i" }}</td>
+                                    <td><span class="badge bg-secondary">{{ log.get_log_type_display }}</span></td>
+                                    <td>
+                                        <span class="badge bg-{% if log.status == 'success' %}success{% elif log.status == 'error' %}danger{% elif log.status == 'warning' %}warning{% else %}info{% endif %}">
+                                            {{ log.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ log.message|truncatechars:50 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No recent logs available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clock me-2"></i>Recent Attendance Records</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_attendance %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Sync Attempts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in recent_attendance %}
+                                <tr>
+                                    <td>{{ record.employee.emp_code }}</td>
+                                    <td>{{ record.attendance_date }}</td>
+                                    <td>
+                                        <span class="status-{{ record.status }}">
+                                            <i class="fas fa-circle"></i> {{ record.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ record.sync_attempts }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No recent attendance records</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Last Sync Times -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle me-2"></i>System Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Last Employee Sync:</strong><br>
+                        {% if stats.last_employee_sync %}
+                            {{ stats.last_employee_sync|date:"M d, Y H:i" }}
+                        {% else %}
+                            <span class="text-muted">Never</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Last Attendance Sync:</strong><br>
+                        {% if stats.last_zkbio_sync %}
+                            {{ stats.last_zkbio_sync|date:"M d, Y H:i" }}
+                        {% else %}
+                            <span class="text-muted">Never</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Last ERP Sync:</strong><br>
+                        {% if stats.last_erp_sync %}
+                            {{ stats.last_erp_sync|date:"M d, Y H:i" }}
+                        {% else %}
+                            <span class="text-muted">Never</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <strong>Overall Success Rate:</strong> 
+                        <span class="badge bg-{% if stats.sync_success_rate >= 90 %}success{% elif stats.sync_success_rate >= 70 %}warning{% else %}danger{% endif %}">
+                            {{ stats.sync_success_rate }}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Chart for sync statistics
+const ctx = document.getElementById('syncChart').getContext('2d');
+const dailyStats = {{ daily_stats|safe }};
+
+const syncChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: dailyStats.map(d => d.date),
+        datasets: [
+            {
+                label: 'Total',
+                data: dailyStats.map(d => d.total),
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            },
+            {
+                label: 'Synced',
+                data: dailyStats.map(d => d.synced),
+                borderColor: 'rgb(40, 167, 69)',
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                tension: 0.1
+            },
+            {
+                label: 'Failed',
+                data: dailyStats.map(d => d.failed),
+                borderColor: 'rgb(220, 53, 69)',
+                backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                tension: 0.1
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+            }
+        }
+    }
+});
+
+// Auto-refresh every 30 seconds
+setInterval(() => {
+    location.reload();
+}, 30000);
+</script>
+{% endblock %}
