@@ -1,4 +1,5 @@
 # zkbioapp/views.py
+import logging
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
@@ -9,6 +10,8 @@ from datetime import datetime, timedelta
 from .models import Employee, AttendanceRecord, SyncLog, SyncStats
 from .services.zkbio_service import ZKBioService
 from .services.erp_service import ERPService
+
+logger = logging.getLogger(__name__)
 
 def dashboard(request):
     """Main dashboard view"""
@@ -53,7 +56,7 @@ def dashboard(request):
         'daily_stats_json': daily_stats_json,
     }
     
-    return render(request, 'zkbio_sync/dashboard.html', context)
+    return render(request, 'zkbioapp/dashboard.html', context)
 
 def sync_employees(request):
     """Sync employees from ZKBio"""
@@ -65,7 +68,7 @@ def sync_employees(request):
         except Exception as e:
             messages.error(request, f'Failed to sync employees: {str(e)}')
     
-    return redirect('zkbio_sync:dashboard')
+    return redirect('zkbioapp:dashboard')
 
 def sync_attendance(request):
     """Sync attendance from ZKBio"""
@@ -89,7 +92,7 @@ def sync_attendance(request):
         except Exception as e:
             messages.error(request, f'Failed to sync attendance: {str(e)}')
     
-    return redirect('zkbio_sync:dashboard')
+    return redirect('zkbioapp:dashboard')
 
 def sync_erp(request):
     """Sync attendance to ERP"""
@@ -121,7 +124,7 @@ def sync_erp(request):
         except Exception as e:
             messages.error(request, f'Failed to sync to ERP: {str(e)}')
     
-    return redirect('zkbio_sync:dashboard')
+    return redirect('zkbioapp:dashboard')
 
 def full_sync(request):
     """Perform full synchronization"""
@@ -157,7 +160,7 @@ def full_sync(request):
         except Exception as e:
             messages.error(request, f'Full sync failed: {str(e)}')
     
-    return redirect('zkbio_sync:dashboard')
+    return redirect('zkbioapp:dashboard')
 
 def api_stats(request):
     """API endpoint for dashboard statistics"""
@@ -176,8 +179,7 @@ def api_stats(request):
             'total_records': stats.total_records,
             'pending_records': stats.pending_records,
             'synced_records': stats.synced_records,
-            'failed_records': stats.failed_records,
-            'duplicate_records': stats.duplicate_records,
+            'failed_records': stats.failed_records,            
             'success_rate': stats.sync_success_rate,
         },
         'recent': recent_stats,

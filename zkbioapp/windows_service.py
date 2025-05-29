@@ -1,4 +1,4 @@
-# zkbio_sync/windows_service.py
+# zkbioapp/windows_service.py
 import win32serviceutil
 import win32service
 import win32event
@@ -18,7 +18,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zkbio_sync.settings')
 import django
 django.setup()
 
-from zkbio_sync.scheduler import sync_scheduler
+from zkbioapp.scheduler import sync_scheduler
 
 class ZKBioSyncService(win32serviceutil.ServiceFramework):
     """Windows Service for ZKBio Sync Scheduler"""

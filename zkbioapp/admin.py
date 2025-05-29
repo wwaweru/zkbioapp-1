@@ -165,7 +165,7 @@ class SyncStatsAdmin(admin.ModelAdmin):
     ]
     readonly_fields = [
         'total_employees', 'active_employees', 'total_records', 'pending_records',
-        'synced_records', 'failed_records', 'duplicate_records', 'sync_success_rate',
+        'synced_records', 'failed_records', 'sync_success_rate',
         'last_zkbio_sync', 'last_erp_sync', 'last_employee_sync', 'updated_at'
     ]
     
@@ -176,7 +176,7 @@ class SyncStatsAdmin(admin.ModelAdmin):
         ('Attendance Record Statistics', {
             'fields': (
                 'total_records', 'pending_records', 'synced_records', 
-                'failed_records', 'duplicate_records', 'sync_success_rate'
+                'failed_records', 'sync_success_rate'
             )
         }),
         ('Last Sync Times', {

@@ -43,8 +43,7 @@ class Command(BaseCommand):
         self.stdout.write(f'  Total Attendance Records: {stats.total_records}')
         self.stdout.write(f'  Pending Records: {stats.pending_records}')
         self.stdout.write(f'  Synced Records: {stats.synced_records}')
-        self.stdout.write(f'  Failed Records: {stats.failed_records}')
-        self.stdout.write(f'  Duplicate Records: {stats.duplicate_records}')
+        self.stdout.write(f'  Failed Records: {stats.failed_records}')        
         self.stdout.write(f'  Overall Success Rate: {stats.sync_success_rate}%')
         
         # Recent statistics
@@ -53,7 +52,6 @@ class Command(BaseCommand):
         self.stdout.write(f'  Pending: {recent_stats["pending"]}')
         self.stdout.write(f'  Synced: {recent_stats["synced"]}')
         self.stdout.write(f'  Failed: {recent_stats["failed"]}')
-        self.stdout.write(f'  Duplicates: {recent_stats["duplicates"]}')
         self.stdout.write(f'  Success Rate: {recent_stats["success_rate"]}%')
         
         # Last sync times
